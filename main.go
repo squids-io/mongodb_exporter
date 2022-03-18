@@ -18,7 +18,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/alecthomas/kong"
@@ -74,13 +73,6 @@ func main() {
 
 		return
 	}
-
-	// 替换 MONGODB_URI
-	user := os.Getenv("MONGO_ROOT_USERNAME")
-	password := os.Getenv("MONGO_ROOT_PASSWORD")
-	uri := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:27017/admin", user, password)
-	fmt.Println("mongo uri: ", uri)
-	opts.URI = uri
 
 	e := buildExporter(opts)
 	e.Run()

@@ -112,7 +112,19 @@ test-cluster: env           ## Starts MongoDB test cluster. Use env var TEST_MON
 test-cluster-clean: env     ## Stops MongoDB test cluster.
 	docker-compose down
 
-IMG ?= docker.io/squids/mongo-exporter:v1.0.0
-squids-image:
-	docker build . -t ${IMG}
-	docker push ${IMG}
+IMG ?= swr.cn-east-2.myhuaweicloud.com/squids/mongo-exporter:v1.0.0
+squids-export-amd64:
+	docker build --platform=linux/amd64 . -t ${IMG}-amd64
+	docker push ${IMG}-amd64
+
+squids-export-arm64:
+	docker build --platform=linux/arm64 . -t ${IMG}-arm64
+	docker push ${IMG}-arm64
+
+squids-export-manifest:
+	docker manifest create --amend ${IMG} ${IMG}-amd64 ${IMG}-arm64
+	docker manifest annotate ${IMG} ${IMG}-arm64 --os linux --arch arm64
+	docker manifest annotate ${IMG} ${IMG}-amd64 --os linux --arch amd64
+	docker manifest push ${IMG}
+
+squids-export: squids-export-amd64 squids-export-arm64 squids-export-manifest
